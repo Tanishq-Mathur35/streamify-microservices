@@ -1,6 +1,7 @@
 import axios from "axios"
 import dotenv from "dotenv"
 import { NextFunction, Request, Response } from "express"
+import multer from "multer"
 
 dotenv.config()
 
@@ -43,3 +44,10 @@ export const isAuth = async (req: AuthenticatedRequest, res: Response, next: Nex
         })
     }
 }
+
+
+const storage = multer.memoryStorage()
+
+const uploadFile = multer({storage}).single("file")
+
+export default uploadFile

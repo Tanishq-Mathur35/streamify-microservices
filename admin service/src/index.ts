@@ -1,9 +1,16 @@
+import cloudinary from "cloudinary"
 import dotenv from 'dotenv'
 import express from 'express'
 import { sql } from './config/db.js'
 import adminRoutes from "./route.js"
 
 dotenv.config()
+
+cloudinary.v2.config({
+    cloud_name: process.env.CLOUD_NAME,
+    api_key: process.env.CLOUD_API_KEY,
+    api_secret: process.env.CLOUD_API_SECRET
+})
 
 const app = express()
 
