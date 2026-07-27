@@ -14,10 +14,12 @@ cloudinary.v2.config({
 
 const app = express()
 
+app.use(express.json())
+
 async function initDB() {
     try {
         await sql`
-        CREATE TABLE IF NOT EXISTS album (
+        CREATE TABLE IF NOT EXISTS albums (
             id SERIAL PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
             description VARCHAR(255) NOT NULL,
@@ -33,7 +35,7 @@ async function initDB() {
             description VARCHAR(255) NOT NULL,
             thumbnail VARCHAR(255),
             audio VARCHAR(255) NOT NULL,
-            album_id INTEGER REFERENCES album(id) ON DELETE SET NULL,
+            album_id INTEGER REFERENCES albums(id) ON DELETE SET NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         `
