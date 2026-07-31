@@ -1,12 +1,33 @@
 import { sql } from "./config/db.js";
+import { redisClient } from "./index.js";
 import TryCatch from "./TryCatch.js";
 
 export const getAllAlbums = TryCatch(async (req, res) => {
     let albums;
+    const CACHE_EXPIRY = 1800
 
-    albums = await sql`SELECT * FROM albums`
+    if (redisClient.isReady) {
+        await redisClient.get("albums")
+    }
 
-    res.json(albums)
+    if (albums) {
+        console.log("Cache Hit")
+        res.json(JSON.parse(albums))
+        return
+    }
+    else {
+        console.log("Cache Miss")
+        albums = await sql`SELECT * FROM albums`
+
+        if (redisClient.isReady) {
+            await redisClient.set("albums", JSON.stringify(albums), {
+                EX: CACHE_EXPIRY
+            })
+        }
+
+        res.json(albums)
+        return
+    }
 })
 
 
