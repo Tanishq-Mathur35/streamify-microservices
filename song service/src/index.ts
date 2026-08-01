@@ -2,6 +2,7 @@ import dotenv from "dotenv"
 import express from "express"
 import redis from "redis"
 import songRoutes from "./route.js"
+import cors from "cors"
 
 dotenv.config()
 
@@ -15,6 +16,8 @@ redisClient
     .catch(console.error)
 
 const app = express()
+
+app.use(cors())
 
 app.use("/api/v1", songRoutes)
 

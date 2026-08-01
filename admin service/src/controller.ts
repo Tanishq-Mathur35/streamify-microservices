@@ -3,6 +3,7 @@ import { Request } from "express";
 import TryCatch from "./TryCatch.js";
 import getBuffer from "./config/dataUri.js";
 import { sql } from "./config/db.js";
+import { redisClient } from "./index.js";
 
 interface AuthenticatedRequest extends Request{
     user?: {
@@ -46,6 +47,11 @@ export const addAlbum = TryCatch(async (req: AuthenticatedRequest, res) => {
     const result = await sql`
      INSERT INTO albums (title, description, thumbnail) VALUES (${title}, ${description}, ${cloud.secure_url}) RETURNING *
     `
+
+    if (redisClient.isReady) {
+        await redisClient.del("albums")
+        console.log("Cache Invalidated for albums.")
+    }
 
     res.json({
         message: "Album created!!",
@@ -101,6 +107,11 @@ export const addSong = TryCatch(async (req: AuthenticatedRequest, res) => {
     (${title}, ${description}, ${cloud.secure_url}, ${album})
     `
 
+    if (redisClient.isReady) {
+        await redisClient.del("songs")
+        console.log("Cache Invalidated for songs.")
+    }
+
     res.json({
         message: "Song Added",
     })
@@ -150,6 +161,11 @@ export const addThumbnail = TryCatch(async (req: AuthenticatedRequest, res) => {
     UPDATE songs SET thumbnail = ${cloud.secure_url} WHERE id = ${req.params.id} RETURNING *
     `
 
+    if (redisClient.isReady) {
+        await redisClient.del("songs")
+        console.log("Cache Invalidated for songs.")
+    }
+
     res.json({
     message: "Thumbnail added",
     song: result[0],
@@ -180,6 +196,16 @@ export const deleteAlbum = TryCatch(async (req: AuthenticatedRequest, res) => {
 
     await sql`DELETE FROM albums WHERE id = ${id}`
 
+    if (redisClient.isReady) {
+        await redisClient.del("albums")
+        console.log("Cache Invalidated for albums.")
+    }
+
+    if (redisClient.isReady) {
+        await redisClient.del("songs")
+        console.log("Cache Invalidated for songs.")
+    }
+
     res.json({
     message: "Album deleted successfully",
     })
@@ -206,6 +232,11 @@ export const deleteSong = TryCatch(async (req: AuthenticatedRequest, res) => {
     }
 
     await sql`DELETE FROM  songs WHERE id = ${id}`
+
+    if (redisClient.isReady) {
+        await redisClient.del("songs")
+        console.log("Cache Invalidated for songs.")
+    }
 
     res.json({
         message: "Song Deleted Successfully!!"

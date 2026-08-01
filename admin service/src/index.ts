@@ -1,10 +1,21 @@
 import cloudinary from "cloudinary"
+import cors from "cors"
 import dotenv from 'dotenv'
 import express from 'express'
+import redis from "redis"
 import { sql } from './config/db.js'
 import adminRoutes from "./route.js"
 
 dotenv.config()
+
+export const redisClient = redis.createClient({
+    url: process.env.REDIS_URL
+})
+
+redisClient
+    .connect()
+    .then(() => console.log("Connected to Redis"))
+    .catch(console.error)
 
 cloudinary.v2.config({
     cloud_name: process.env.CLOUD_NAME,
@@ -13,6 +24,8 @@ cloudinary.v2.config({
 })
 
 const app = express()
+
+app.use(cors())
 
 app.use(express.json())
 

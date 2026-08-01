@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import express from "express"
 import mongoose from "mongoose"
 import userRoutes from "./route.js"
+import cors from "cors"
 
 dotenv.config()
 
@@ -23,6 +24,8 @@ const conncetDB = async () => {
 }
 
 const app = express()
+
+app.use(cors())
 
 app.use(express.json())
 
