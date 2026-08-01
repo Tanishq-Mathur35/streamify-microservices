@@ -7,7 +7,7 @@ export const getAllAlbums = TryCatch(async (req, res) => {
     const CACHE_EXPIRY = 1800
 
     if (redisClient.isReady) {
-        await redisClient.get("albums")
+        albums = await redisClient.get("albums")
     }
 
     if (albums) {
