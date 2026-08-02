@@ -1,0 +1,17 @@
+{
+    "name": "streamify-microservices",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Root orchestrator for streamify-microservices (user, admin, song services + frontend)",
+    "scripts": {
+        "install:all": "npm install --prefix \"user service\" && npm install --prefix \"admin service\" && npm install --prefix \"song service\" && npm install --prefix frontend",
+        "dev:user": "npm run dev --prefix \"user service\"",
+        "dev:admin": "npm run dev --prefix \"admin service\"",
+        "dev:song": "npm run dev --prefix \"song service\"",
+        "dev:frontend": "npm run dev --prefix frontend",
+        "dev": "concurrently -n USER,ADMIN,SONG,FRONTEND -c blue,green,yellow,magenta \"npm run dev:user\" \"npm run dev:admin\" \"npm run dev:song\" \"npm run dev:frontend\""
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.0"
+    }
+}
